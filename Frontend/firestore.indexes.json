@@ -1,0 +1,12 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "months",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "monthKey", "order": "DESCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}
