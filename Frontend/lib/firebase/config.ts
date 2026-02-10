@@ -1,13 +1,13 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
 
 const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
+  apiKey: "AIzaSyCF7z5BRgDlaCzh9FqmEC4CWJ8JBg4DYmI",
+  authDomain: "moneytracking-1dcdc.firebaseapp.com",
+  projectId: "moneytracking-1dcdc",
+  storageBucket: "moneytracking-1dcdc.firebasestorage.app",
+  messagingSenderId: "755165187671",
+  appId: "1:755165187671:web:a90725c76fb3a807885d12",
+  measurementId: "G-LH2ZR4QFK7"
 };
 
 export const firebaseApp = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
