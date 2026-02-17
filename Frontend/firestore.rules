@@ -1,35 +1,161 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    function isAuthenticated() {
+    function signedIn() {
       return request.auth != null;
     }
 
     function isOwner(uid) {
-      return isAuthenticated() && request.auth.uid == uid;
+      return signedIn() && request.auth.uid == uid;
+    }
+
+    function isNumber(v) {
+      return v is int || v is float;
+    }
+
+    function isMonthKey(v) {
+      return v is string && v.matches('^[0-9]{4}-[0-9]{2}$');
+    }
+
+    function isDateISO(v) {
+      return v is string && v.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$');
+    }
+
+    function validGoals(v) {
+      return v is map &&
+        v.keys().hasOnly(['monthlyIncomeGoal']) &&
+        isNumber(v.monthlyIncomeGoal);
+    }
+
+    function validProfileShape() {
+      return request.resource.data.keys().hasOnly([
+        'initialPrincipal', 'principal', 'classRate', 'monthlyInterestRate',
+        'perClassInterestRate', 'netProfit', 'goals',
+        'totalClasses', 'totalClassIncome', 'totalInterest', 'totalExpenses',
+        'createdAt', 'updatedAt'
+      ]) &&
+      isNumber(request.resource.data.initialPrincipal) &&
+      isNumber(request.resource.data.principal) &&
+      isNumber(request.resource.data.classRate) &&
+      isNumber(request.resource.data.monthlyInterestRate) &&
+      isNumber(request.resource.data.perClassInterestRate) &&
+      isNumber(request.resource.data.netProfit) &&
+      validGoals(request.resource.data.goals) &&
+      isNumber(request.resource.data.totalClasses) &&
+      isNumber(request.resource.data.totalClassIncome) &&
+      isNumber(request.resource.data.totalInterest) &&
+      isNumber(request.resource.data.totalExpenses) &&
+      request.resource.data.createdAt is string &&
+      request.resource.data.updatedAt is string;
+    }
+
+    function validProfileCreate() {
+      return validProfileShape();
+    }
+
+    function validProfileUpdate() {
+      return validProfileShape() &&
+        request.resource.data.createdAt == resource.data.createdAt;
+    }
+
+    function validMonthDoc(monthId) {
+      return request.resource.data.keys().hasOnly([
+        'monthKey', 'classesTaken', 'classIncome', 'interestApplied',
+        'interestAmount', 'expenseTotal', 'closingPrincipal', 'updatedAt'
+      ]) &&
+      request.resource.data.monthKey == monthId &&
+      isMonthKey(request.resource.data.monthKey) &&
+      isNumber(request.resource.data.classesTaken) &&
+      isNumber(request.resource.data.classIncome) &&
+      request.resource.data.interestApplied is bool &&
+      isNumber(request.resource.data.interestAmount) &&
+      isNumber(request.resource.data.expenseTotal) &&
+      isNumber(request.resource.data.closingPrincipal) &&
+      request.resource.data.updatedAt is string;
+    }
+
+    function validExpenseCreate() {
+      return request.resource.data.keys().hasOnly([
+        'amount', 'category', 'customCategory', 'dateISO', 'monthKey', 'notes', 'createdAt', 'createdAtServer'
+      ]) &&
+      isNumber(request.resource.data.amount) &&
+      request.resource.data.amount > 0 &&
+      request.resource.data.category is string &&
+      (!request.resource.data.keys().hasAny(['customCategory']) || request.resource.data.customCategory is string) &&
+      (!request.resource.data.keys().hasAny(['notes']) || request.resource.data.notes is string) &&
+      isDateISO(request.resource.data.dateISO) &&
+      isMonthKey(request.resource.data.monthKey) &&
+      request.resource.data.createdAt is string;
+    }
+
+    function validClassEntryCreate(dateId) {
+      return request.resource.data.keys().hasOnly([
+        'dateISO', 'monthKey', 'earning', 'note', 'createdAt', 'updatedAt'
+      ]) &&
+      request.resource.data.dateISO == dateId &&
+      isDateISO(request.resource.data.dateISO) &&
+      isMonthKey(request.resource.data.monthKey) &&
+      isNumber(request.resource.data.earning) &&
+      (!request.resource.data.keys().hasAny(['note']) || request.resource.data.note is string) &&
+      request.resource.data.createdAt is string &&
+      request.resource.data.updatedAt is string;
+    }
+
+    function validClassEntryUpdate(dateId) {
+      return validClassEntryCreate(dateId) &&
+        request.resource.data.dateISO == resource.data.dateISO &&
+        request.resource.data.createdAt == resource.data.createdAt;
+    }
+
+    function validCompoundingCreate() {
+      return request.resource.data.keys().hasOnly([
+        'dateISO', 'amountAdded', 'createdAt'
+      ]) &&
+      isDateISO(request.resource.data.dateISO) &&
+      isNumber(request.resource.data.amountAdded) &&
+      request.resource.data.amountAdded > 0 &&
+      request.resource.data.createdAt is string;
     }
 
     match /users/{uid} {
       allow read: if isOwner(uid);
-      allow write: if false;
+      allow create, update, delete: if false;
 
       match /profile/{docId} {
-        allow read, create, update: if isOwner(uid);
+        allow read: if isOwner(uid);
+        allow create: if isOwner(uid) && validProfileCreate();
+        allow update: if isOwner(uid) && validProfileUpdate();
         allow delete: if false;
       }
 
       match /months/{monthId} {
-        allow read, create, update: if isOwner(uid);
+        allow read: if isOwner(uid);
+        allow create, update: if isOwner(uid) && validMonthDoc(monthId);
         allow delete: if false;
       }
 
       match /expenses/{expenseId} {
-        allow read, create: if isOwner(uid);
+        allow read: if isOwner(uid);
+        allow create: if isOwner(uid) && validExpenseCreate();
         allow update, delete: if false;
       }
 
       match /interestHistory/{monthId} {
-        allow read, create: if isOwner(uid);
+        allow read: if isOwner(uid);
+        allow create, update: if isOwner(uid);
+        allow delete: if false;
+      }
+
+      match /classEntries/{dateId} {
+        allow read: if isOwner(uid);
+        allow create: if isOwner(uid) && validClassEntryCreate(dateId);
+        allow update: if isOwner(uid) && validClassEntryUpdate(dateId);
+        allow delete: if isOwner(uid);
+      }
+
+      match /compoundingHistory/{recordId} {
+        allow read: if isOwner(uid);
+        allow create: if isOwner(uid) && validCompoundingCreate();
         allow update, delete: if false;
       }
     }

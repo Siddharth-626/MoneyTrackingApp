@@ -1,9 +1,11 @@
 import type { NextConfig } from "next";
 
+const isProd = false;
+
 const nextConfig: NextConfig = {
   output: "export",
-  basePath: "/MoneyTrackingApp",
-  assetPrefix: "/MoneyTrackingApp",
+  basePath: isProd ? "/MoneyTrackingApp" : "",
+  assetPrefix: isProd ? "/MoneyTrackingApp" : "",
   images: {
     unoptimized: true,
   },

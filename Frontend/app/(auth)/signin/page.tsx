@@ -1,30 +1,33 @@
 "use client";
 
-import Link from "next/link";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
 import { useAuth } from "@/hooks/useAuth";
 
 export default function SignInPage() {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
+  const router = useRouter();
 
-  if (user) {
+  useEffect(() => {
+    if (!loading && user) {
+      router.replace("/dashboard");
+    }
+  }, [user, loading, router]);
+
+  if (loading || user) {
     return (
       <main className="mx-auto flex min-h-screen max-w-3xl items-center justify-center p-6">
-        <div className="w-full rounded-2xl bg-white p-8 shadow-panel">
-          <p className="mb-4 text-slate-700">You are already signed in.</p>
-          <Link href="/dashboard" className="rounded-xl bg-bankBlue px-4 py-2 text-white">
-            Go to Dashboard
-          </Link>
-        </div>
+        <p className="text-slate-600">Loading...</p>
       </main>
     );
   }
 
   return (
     <main className="mx-auto flex min-h-screen max-w-3xl items-center justify-center p-6">
-      <section className="w-full rounded-2xl bg-white p-8 shadow-panel">
-        <h1 className="text-3xl font-bold text-slateInk">Money Tracking</h1>
-        <p className="mt-2 text-slate-600">Track principal, class income, monthly interest, and expenses.</p>
+      <section className="w-full rounded-2xl bg-white dark:bg-slate-800 p-8 shadow-panel">
+        <h1 className="text-3xl font-bold text-slateInk dark:text-slate-100">Money Tracking</h1>
+        <p className="mt-2 text-slate-600 dark:text-slate-400">Track principal, class income, monthly interest, and expenses.</p>
         <div className="mt-8">
           <GoogleSignInButton />
         </div>

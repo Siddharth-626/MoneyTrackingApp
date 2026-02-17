@@ -6,6 +6,10 @@
   color-scheme: light;
 }
 
+.dark:root {
+  color-scheme: dark;
+}
+
 body {
   margin: 0;
   min-height: 100vh;
@@ -14,4 +18,12 @@ body {
     radial-gradient(circle at bottom right, rgba(11, 59, 116, 0.15), transparent 38%),
     #f4f7fb;
   color: #0f172a;
+}
+
+.dark body {
+  background:
+    radial-gradient(circle at top left, rgba(48, 196, 141, 0.10), transparent 35%),
+    radial-gradient(circle at bottom right, rgba(11, 59, 116, 0.12), transparent 45%),
+    #0f172a;
+  color: #f4f7fb;
 }

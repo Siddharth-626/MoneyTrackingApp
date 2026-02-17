@@ -9,12 +9,22 @@ export function formatCurrency(amount: number) {
 }
 
 export function buildDashboardMetrics(profile: FinancialProfile): DashboardMetrics {
+  const netProfit = Number(profile.netProfit ?? 0);
+  const totalValue = profile.principal + netProfit;
+  const totalEarnings = profile.totalClassIncome + profile.totalInterest;
+  const netGrowth = totalValue - profile.initialPrincipal;
+  const roiPct = profile.initialPrincipal > 0 ? (netGrowth / profile.initialPrincipal) * 100 : 0;
+
   return {
     currentPrincipal: profile.principal,
+    netProfit,
+    totalValue,
     totalClasses: profile.totalClasses,
     totalClassIncome: profile.totalClassIncome,
     totalInterest: profile.totalInterest,
     totalExpenses: profile.totalExpenses,
-    netGrowth: profile.principal - profile.initialPrincipal
+    totalEarnings,
+    netGrowth,
+    roiPct
   };
 }

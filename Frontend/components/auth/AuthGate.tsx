@@ -15,7 +15,7 @@ export function AuthGate({ children }: { children: ReactNode }) {
   }, [loading, router, user]);
 
   if (loading || !user) {
-    return <div className="p-6 text-sm text-slate-600">Authenticating...</div>;
+    return <div className="p-6 text-sm text-slate-600 dark:text-slate-400">Authenticating...</div>;
   }
 
   return <>{children}</>;
