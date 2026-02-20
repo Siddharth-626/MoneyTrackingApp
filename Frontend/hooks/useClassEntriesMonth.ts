@@ -34,6 +34,7 @@ export function useClassEntriesMonth(year: number, monthIndex0: number) {
       setEntries(rows);
       setLoading(false);
     }, (e) => {
+      console.error("useClassEntriesMonth error:", e);
       setError(e.message);
       setLoading(false);
     });

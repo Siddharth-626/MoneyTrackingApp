@@ -24,6 +24,7 @@ export function useMonthlyLedger() {
       setRows(items);
       setLoading(false);
     }, (e) => {
+      console.error("useMonthlyLedger error:", e);
       setError(e.message);
       setLoading(false);
     });

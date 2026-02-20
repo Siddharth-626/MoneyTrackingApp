@@ -39,13 +39,21 @@ export function useFinanceDataset() {
       subscribeToProfile(
         user.uid,
         (p) => {
-          setProfile(p);
+          if (!p) {
+            setError("Profile document missing.");
+          } else {
+            setProfile(p);
+          }
           if (!profileReceived) {
             profileReceived = true;
             setLoading(false);
           }
         },
-        (e) => { setError(e.message); setLoading(false); }
+        (e) => {
+          console.error("useFinanceDataset profile error:", e);
+          setError(e.message);
+          setLoading(false);
+        }
       )
     );
 

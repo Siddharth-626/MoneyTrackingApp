@@ -92,8 +92,9 @@ export default function AnalyticsPage() {
   const totals = useMemo(() => {
     if (!profile) return null;
     const totalClassesTaken = filtered.entries.length;
-    const totalEarnings = filtered.entries.reduce((s, e) => s + e.earning, 0) + profile.totalInterest;
-    const totalExpenses = filtered.expenses.reduce((s, e) => s + e.amount, 0);
+    const periodEarnings = filtered.entries.reduce((s, e) => s + e.earning, 0);
+    const periodExpenses = filtered.expenses.reduce((s, e) => s + e.amount, 0);
+
     const netProfit = Number(profile.netProfit ?? 0);
     const totalValue = profile.principal + netProfit;
     const netGrowth = totalValue - profile.initialPrincipal;
@@ -102,9 +103,9 @@ export default function AnalyticsPage() {
 
     return {
       totalClassesTaken,
-      totalEarnings,
-      totalExpenses,
-      netProfit,
+      periodEarnings,
+      periodExpenses,
+      allTimeNetProfit: netProfit,
       currentPrincipal: profile.principal,
       roiPct,
       highestEarningDay: bestDay.dateISO ? `${bestDay.dateISO} (${formatCurrency(bestDay.amount)})` : "—",
@@ -180,9 +181,9 @@ export default function AnalyticsPage() {
         expenses: filtered.expenses,
         summary: {
           totalClassesTaken: totals.totalClassesTaken,
-          totalEarnings: totals.totalEarnings,
-          totalExpenses: totals.totalExpenses,
-          netProfit: totals.netProfit,
+          totalEarnings: totals.periodEarnings,
+          totalExpenses: totals.periodExpenses,
+          netProfit: totals.allTimeNetProfit,
           currentPrincipal: totals.currentPrincipal,
           roiPct: totals.roiPct
         },
@@ -260,14 +261,14 @@ export default function AnalyticsPage() {
 
             <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
               {[
-                { label: "Total Classes Taken", value: String(totals.totalClassesTaken) },
-                { label: "Total Earnings", value: formatCurrency(totals.totalEarnings) },
-                { label: "Total Expenses", value: formatCurrency(totals.totalExpenses) },
-                { label: "Net Profit", value: formatCurrency(totals.netProfit) },
+                { label: "Classes in Period", value: String(totals.totalClassesTaken) },
+                { label: "Earnings in Period", value: formatCurrency(totals.periodEarnings) },
+                { label: "Expenses in Period", value: formatCurrency(totals.periodExpenses) },
+                { label: "All-time Net Profit", value: formatCurrency(totals.allTimeNetProfit) },
                 { label: "Current Principal", value: formatCurrency(totals.currentPrincipal) },
-                { label: "ROI %", value: `${totals.roiPct.toFixed(2)}%` },
-                { label: "Highest Earning Day", value: totals.highestEarningDay },
-                { label: "Monthly Average", value: formatCurrency(totals.monthlyAverage) }
+                { label: "All-time ROI %", value: `${totals.roiPct.toFixed(2)}%` },
+                { label: "Best Day (Period)", value: totals.highestEarningDay },
+                { label: "Monthly Avg Income", value: formatCurrency(totals.monthlyAverage) }
               ].map((c) => (
                 <article key={c.label} className="rounded-2xl bg-white dark:bg-slate-800 p-4 shadow-panel">
                   <p className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">{c.label}</p>
@@ -380,14 +381,14 @@ export default function AnalyticsPage() {
                       <Tooltip />
                       <Pie
                         data={[
-                          { name: "Income", value: totals.totalEarnings },
-                          { name: "Expenses", value: totals.totalExpenses }
+                      { name: "Income", value: totals.periodEarnings },
+                      { name: "Expenses", value: totals.periodExpenses }
                         ]}
                         dataKey="value"
                         nameKey="name"
                         outerRadius={80}
                       >
-                        {[totals.totalEarnings, totals.totalExpenses].map((_, i) => (
+                    {[totals.periodEarnings, totals.periodExpenses].map((_, i) => (
                           <Cell key={`ie-${i}`} fill={PIE_COLORS_1[i]} />
                         ))}
                       </Pie>
@@ -399,13 +400,13 @@ export default function AnalyticsPage() {
                       <Pie
                         data={[
                           { name: "Principal", value: totals.currentPrincipal },
-                          { name: "Profit", value: totals.netProfit }
+                      { name: "Profit", value: totals.allTimeNetProfit }
                         ]}
                         dataKey="value"
                         nameKey="name"
                         outerRadius={80}
                       >
-                        {[totals.currentPrincipal, totals.netProfit].map((_, i) => (
+                    {[totals.currentPrincipal, totals.allTimeNetProfit].map((_, i) => (
                           <Cell key={`pp-${i}`} fill={PIE_COLORS_2[i]} />
                         ))}
                       </Pie>
