@@ -24,6 +24,7 @@ export function useExpenses() {
       setRows(items);
       setLoading(false);
     }, (e) => {
+      console.error("useExpenses error:", e);
       setError(e.message);
       setLoading(false);
     });

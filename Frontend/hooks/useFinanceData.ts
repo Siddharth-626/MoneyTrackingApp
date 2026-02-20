@@ -29,10 +29,16 @@ export function useFinanceData() {
     const unsub = subscribeToProfile(
       user.uid,
       (nextProfile) => {
-        setProfile(nextProfile);
+        if (!nextProfile) {
+          setError("Financial profile not found.");
+        } else {
+          setProfile(nextProfile);
+          setError(null);
+        }
         setLoading(false);
       },
       (e) => {
+        console.error("useFinanceData error:", e);
         setError(e.message);
         setLoading(false);
       }
