@@ -29,7 +29,9 @@ export function useFinanceData() {
     const unsub = subscribeToProfile(
       user.uid,
       (nextProfile) => {
-        setProfile(nextProfile);
+        if (nextProfile) {
+          setProfile(nextProfile);
+        }
         setLoading(false);
       },
       (e) => {

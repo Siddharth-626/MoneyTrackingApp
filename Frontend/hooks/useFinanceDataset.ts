@@ -39,13 +39,18 @@ export function useFinanceDataset() {
       subscribeToProfile(
         user.uid,
         (p) => {
-          setProfile(p);
+          if (p) {
+            setProfile(p);
+          }
           if (!profileReceived) {
             profileReceived = true;
             setLoading(false);
           }
         },
-        (e) => { setError(e.message); setLoading(false); }
+        (e) => {
+          setError(e.message);
+          setLoading(false);
+        }
       )
     );
 
