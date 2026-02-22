@@ -115,12 +115,15 @@ export async function ensureUserProfile(uid: string) {
   await setDoc(ref, seed);
 }
 
-export function subscribeToProfile(uid: string, onData: (profile: FinancialProfile) => void, onError: (e: Error) => void) {
+export function subscribeToProfile(uid: string, onData: (profile: FinancialProfile | null) => void, onError: (e: Error) => void) {
   return onSnapshot(
     profileRef(uid),
     (snap) => {
       const data = snap.data();
-      if (!data) return;
+      if (!data) {
+        onData(null);
+        return;
+      }
       onData(toProfile(data as Record<string, unknown>));
     },
     onError

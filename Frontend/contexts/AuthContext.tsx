@@ -9,27 +9,36 @@ import { ensureUserProfile } from "@/lib/finance/service";
 type AuthContextValue = {
   user: User | null;
   loading: boolean;
+  error: string | null;
 };
 
-export const AuthContext = createContext<AuthContextValue>({ user: null, loading: true });
+export const AuthContext = createContext<AuthContextValue>({ user: null, loading: true, error: null });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (nextUser) => {
-      setUser(nextUser);
-      if (nextUser) {
-        await ensureUserProfile(nextUser.uid);
+      try {
+        setError(null);
+        setUser(nextUser);
+        if (nextUser) {
+          await ensureUserProfile(nextUser.uid);
+        }
+      } catch (err) {
+        console.error("Auth initialization error:", err);
+        setError(err instanceof Error ? err.message : "An unknown error occurred during authentication.");
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     });
 
     return unsubscribe;
   }, []);
 
-  const value = useMemo(() => ({ user, loading }), [loading, user]);
+  const value = useMemo(() => ({ user, loading, error }), [loading, user, error]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
