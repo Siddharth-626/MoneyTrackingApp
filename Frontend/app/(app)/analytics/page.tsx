@@ -211,9 +211,12 @@ export default function AnalyticsPage() {
           </div>
         </header>
 
-        {error ? <p className="mb-4 rounded-xl bg-red-50 dark:bg-red-900/30 p-3 text-sm text-red-700 dark:text-red-400">{error}</p> : null}
-        {loading || !profile || !totals ? (
+        {error ? (
+          <p className="mb-4 rounded-xl bg-red-50 dark:bg-red-900/30 p-3 text-sm text-red-700 dark:text-red-400">{error}</p>
+        ) : loading ? (
           <p className="text-slate-600 dark:text-slate-400">Loading analytics...</p>
+        ) : !profile || !totals ? (
+          <p className="text-slate-600 dark:text-slate-400">No profile or data found for analytics. Please ensure your profile is set up.</p>
         ) : (
           <div className="space-y-4">
             <section className="rounded-2xl bg-white dark:bg-slate-800 p-5 shadow-panel">

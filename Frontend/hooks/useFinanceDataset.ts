@@ -45,7 +45,11 @@ export function useFinanceDataset() {
             setLoading(false);
           }
         },
-        (e) => { setError(e.message); setLoading(false); }
+        (e) => {
+          console.error("useFinanceDataset profile error:", e);
+          setError(e.message);
+          setLoading(false);
+        }
       )
     );
 

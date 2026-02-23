@@ -130,7 +130,7 @@ export function subscribeToProfile(uid: string, onData: (profile: FinancialProfi
   );
 }
 
-export function subscribeToMonths(uid: string, onData: (rows: MonthlyLedgerRow[]) => void, onError: (e: Error) => void = () => {}) {
+export function subscribeToMonths(uid: string, onData: (rows: MonthlyLedgerRow[]) => void, onError: (e: Error) => void = (err) => console.error("subscribeToMonths error:", err)) {
   const q = query(collection(db, "users", uid, "months"), orderBy("monthKey", "desc"));
 
   return onSnapshot(
@@ -376,7 +376,7 @@ export async function addExpense(uid: string, input: ExpenseInput) {
   });
 }
 
-export function subscribeToExpenses(uid: string, onData: (rows: ExpenseRecord[]) => void, onError: (e: Error) => void = () => {}) {
+export function subscribeToExpenses(uid: string, onData: (rows: ExpenseRecord[]) => void, onError: (e: Error) => void = (err) => console.error("subscribeToExpenses error:", err)) {
   const q = query(expenseCollection(uid), orderBy("dateISO", "desc"));
 
   return onSnapshot(
@@ -406,7 +406,7 @@ export function subscribeToClassEntriesInRange(
   startDateISO: string,
   endDateISO: string,
   onData: (rows: ClassEntry[]) => void,
-  onError: (e: Error) => void = () => {}
+  onError: (e: Error) => void = (err) => console.error("subscribeToClassEntriesInRange error:", err)
 ) {
   const q = query(
     classEntriesCollection(uid),
@@ -435,7 +435,7 @@ export function subscribeToClassEntriesInRange(
   );
 }
 
-export function subscribeToClassEntries(uid: string, onData: (rows: ClassEntry[]) => void, onError: (e: Error) => void = () => {}) {
+export function subscribeToClassEntries(uid: string, onData: (rows: ClassEntry[]) => void, onError: (e: Error) => void = (err) => console.error("subscribeToClassEntries error:", err)) {
   const q = query(classEntriesCollection(uid), orderBy("dateISO", "desc"));
   return onSnapshot(
     q,
@@ -716,7 +716,7 @@ export async function addNetProfitToPrincipal(uid: string) {
   });
 }
 
-export function subscribeToCompoundingHistory(uid: string, onData: (rows: CompoundingRecord[]) => void, onError: (e: Error) => void = () => {}) {
+export function subscribeToCompoundingHistory(uid: string, onData: (rows: CompoundingRecord[]) => void, onError: (e: Error) => void = (err) => console.error("subscribeToCompoundingHistory error:", err)) {
   const q = query(compoundingCollection(uid), orderBy("createdAt", "desc"), limit(200));
   return onSnapshot(
     q,
