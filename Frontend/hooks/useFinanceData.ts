@@ -33,6 +33,7 @@ export function useFinanceData() {
         setLoading(false);
       },
       (e) => {
+        console.error("useFinanceData subscription error:", e);
         setError(e.message);
         setLoading(false);
       }
