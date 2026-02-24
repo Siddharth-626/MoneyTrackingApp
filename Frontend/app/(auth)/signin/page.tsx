@@ -6,7 +6,7 @@ import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
 import { useAuth } from "@/hooks/useAuth";
 
 export default function SignInPage() {
-  const { user, loading } = useAuth();
+  const { user, loading, error } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -15,10 +15,31 @@ export default function SignInPage() {
     }
   }, [user, loading, router]);
 
+  if (error) {
+    return (
+      <main className="mx-auto flex min-h-screen max-w-3xl items-center justify-center p-6">
+        <div className="w-full rounded-2xl bg-white dark:bg-slate-800 p-8 shadow-panel text-center">
+          <h2 className="text-xl font-bold text-red-600 dark:text-red-400">Authentication Error</h2>
+          <p className="mt-4 text-sm text-slate-600 dark:text-slate-400">{error}</p>
+          <button
+            type="button"
+            onClick={() => window.location.reload()}
+            className="mt-6 rounded-xl bg-bankBlue px-4 py-2 text-sm font-medium text-white"
+          >
+            Retry
+          </button>
+        </div>
+      </main>
+    );
+  }
+
   if (loading || user) {
     return (
       <main className="mx-auto flex min-h-screen max-w-3xl items-center justify-center p-6">
-        <p className="text-slate-600">Loading...</p>
+        <div className="flex flex-col items-center">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-bankBlue border-t-transparent" />
+          <p className="mt-4 text-slate-600 dark:text-slate-400">Loading...</p>
+        </div>
       </main>
     );
   }

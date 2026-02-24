@@ -23,10 +23,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const unsubscribe = onAuthStateChanged(auth, async (nextUser) => {
       try {
         setError(null);
-        setUser(nextUser);
         if (nextUser) {
           await ensureUserProfile(nextUser.uid);
         }
+        setUser(nextUser);
       } catch (err) {
         console.error("Auth initialization error:", err);
         setError(err instanceof Error ? err.message : "An unknown error occurred during authentication.");
