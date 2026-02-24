@@ -55,7 +55,10 @@ export function useFinanceDataset() {
         (rows) => {
           setClassEntries(rows);
         },
-        (e) => setError(e.message)
+        (e) => {
+          setError(e.message);
+          setLoading(false);
+        }
       )
     );
 
@@ -65,7 +68,10 @@ export function useFinanceDataset() {
         (rows) => {
           setExpenses(rows);
         },
-        (e) => setError(e.message)
+        (e) => {
+          setError(e.message);
+          setLoading(false);
+        }
       )
     );
 
@@ -75,7 +81,10 @@ export function useFinanceDataset() {
         (rows) => {
           setCompoundingHistory(rows);
         },
-        (e) => setError(e.message)
+        (e) => {
+          setError(e.message);
+          setLoading(false);
+        }
       )
     );
 
