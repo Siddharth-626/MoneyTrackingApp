@@ -33,10 +33,18 @@ export function AuthGate({ children }: { children: ReactNode }) {
     );
   }
 
-  if (loading || !user) {
+  if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center p-6">
         <div className="text-sm text-slate-600 dark:text-slate-400 animate-pulse">Authenticating...</div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="flex min-h-screen items-center justify-center p-6">
+        <div className="text-sm text-slate-600 dark:text-slate-400">Redirecting...</div>
       </div>
     );
   }
