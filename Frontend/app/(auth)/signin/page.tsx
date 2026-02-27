@@ -15,10 +15,18 @@ export default function SignInPage() {
     }
   }, [user, loading, router]);
 
-  if (loading || user) {
+  if (loading) {
     return (
       <main className="mx-auto flex min-h-screen max-w-3xl items-center justify-center p-6">
-        <p className="text-slate-600">Loading...</p>
+        <p className="text-slate-600 dark:text-slate-400">Loading...</p>
+      </main>
+    );
+  }
+
+  if (user) {
+    return (
+      <main className="mx-auto flex min-h-screen max-w-3xl items-center justify-center p-6">
+        <p className="text-slate-600 dark:text-slate-400">Redirecting...</p>
       </main>
     );
   }
