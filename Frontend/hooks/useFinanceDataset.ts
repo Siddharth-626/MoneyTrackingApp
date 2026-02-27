@@ -45,7 +45,11 @@ export function useFinanceDataset() {
             setLoading(false);
           }
         },
-        (e) => { setError(e.message); setLoading(false); }
+        (e) => {
+          console.error("useFinanceDataset profile error:", e);
+          setError(e.message);
+          setLoading(false);
+        }
       )
     );
 
@@ -55,7 +59,10 @@ export function useFinanceDataset() {
         (rows) => {
           setClassEntries(rows);
         },
-        (e) => setError(e.message)
+        (e) => {
+          console.error("useFinanceDataset class entries error:", e);
+          setError(e.message);
+        }
       )
     );
 
@@ -65,7 +72,10 @@ export function useFinanceDataset() {
         (rows) => {
           setExpenses(rows);
         },
-        (e) => setError(e.message)
+        (e) => {
+          console.error("useFinanceDataset expenses error:", e);
+          setError(e.message);
+        }
       )
     );
 
@@ -75,7 +85,10 @@ export function useFinanceDataset() {
         (rows) => {
           setCompoundingHistory(rows);
         },
-        (e) => setError(e.message)
+        (e) => {
+          console.error("useFinanceDataset compounding error:", e);
+          setError(e.message);
+        }
       )
     );
 
