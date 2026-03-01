@@ -33,9 +33,20 @@ export default function DashboardPage() {
           </div>
         </header>
 
-        {error && <p className="mb-4 rounded-xl bg-red-50 dark:bg-red-900/30 p-3 text-sm text-red-700 dark:text-red-400">{error}</p>}
-        {loading || !data ? (
-          <p className="text-slate-600 dark:text-slate-400">Loading financial data...</p>
+        {error && (
+          <div className="mb-4 rounded-xl bg-red-50 dark:bg-red-900/30 p-3 text-sm text-red-700 dark:text-red-400">
+            {error}
+          </div>
+        )}
+
+        {loading ? (
+          <div className="flex h-64 items-center justify-center">
+            <p className="text-sm text-slate-600 dark:text-slate-400 animate-pulse">Loading financial data...</p>
+          </div>
+        ) : !data ? (
+          <div className="flex h-64 items-center justify-center rounded-2xl bg-white dark:bg-slate-800 p-8 shadow-panel">
+            <p className="text-slate-600 dark:text-slate-400">No financial profile found. Please set up your profile.</p>
+          </div>
         ) : (
           <div className="space-y-4">
             <SummaryCards dashboard={data.dashboard} />
