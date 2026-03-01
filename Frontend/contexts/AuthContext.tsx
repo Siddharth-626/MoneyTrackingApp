@@ -6,6 +6,8 @@ import { User, onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/lib/firebase/client";
 import { ensureUserProfile } from "@/lib/finance/service";
 
+const AUTH_TIMEOUT_MS = 15_000;
+
 type AuthContextValue = {
   user: User | null;
   loading: boolean;
@@ -20,7 +22,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    // Safety timeout: if Firebase SDK does not respond within 15s, unblock the UI.
+    const timeoutId = setTimeout(() => {
+      setLoading((prev) => {
+        if (prev) {
+          setError("Authentication is taking too long. Please refresh the page or check your connection.");
+          return false;
+        }
+        return prev;
+      });
+    }, AUTH_TIMEOUT_MS);
+
     const unsubscribe = onAuthStateChanged(auth, async (nextUser) => {
+      clearTimeout(timeoutId);
       try {
         setError(null);
         setUser(nextUser);
@@ -35,7 +49,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     });
 
-    return unsubscribe;
+    return () => {
+      clearTimeout(timeoutId);
+      unsubscribe();
+    };
   }, []);
 
   const value = useMemo(() => ({ user, loading, error }), [loading, user, error]);
