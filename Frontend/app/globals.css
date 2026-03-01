@@ -6,10 +6,11 @@
   color-scheme: light;
 }
 
-.dark:root {
+.dark {
   color-scheme: dark;
 }
 
+/* ── Base body styles ──────────────────────────────── */
 body {
   margin: 0;
   min-height: 100vh;
@@ -26,4 +27,31 @@ body {
     radial-gradient(circle at bottom right, rgba(11, 59, 116, 0.12), transparent 45%),
     #0f172a;
   color: #f4f7fb;
+}
+
+/* ── Focus rings ───────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid #0b3b74;
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+.dark :focus-visible {
+  outline-color: #30c48d;
+}
+
+/* ── Custom scrollbar (webkit) ─────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(15, 23, 42, 0.2);
+  border-radius: 999px;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
 }

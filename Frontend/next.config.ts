@@ -1,11 +1,12 @@
 import type { NextConfig } from "next";
 
-const isProd = false;
+// Set NEXT_PUBLIC_DEPLOY_TARGET=ghpages when deploying to GitHub Pages.
+const isGhPages = process.env.NEXT_PUBLIC_DEPLOY_TARGET === "ghpages";
 
 const nextConfig: NextConfig = {
   output: "export",
-  basePath: isProd ? "/MoneyTrackingApp" : "",
-  assetPrefix: isProd ? "/MoneyTrackingApp" : "",
+  basePath: isGhPages ? "/MoneyTrackingApp" : "",
+  assetPrefix: isGhPages ? "/MoneyTrackingApp" : "",
   images: {
     unoptimized: true,
   },
