@@ -1,0 +1,20 @@
+
+> money-tracking-app@1.0.0 dev
+> next dev
+
+   ▲ Next.js 15.1.0
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.0.2:3000
+
+ ✓ Starting...
+ ✓ Ready in 2.1s
+ ○ Compiling /signin ...
+ ✓ Compiled /signin in 10.3s (755 modules)
+ GET /signin 200 in 12083ms
+ ○ Compiling /dashboard ...
+ ✓ Compiled /dashboard in 1146ms (805 modules)
+ GET /signin 200 in 655ms
+ GET /dashboard 200 in 1849ms
+ GET /signin 200 in 31ms
+ GET /dashboard 200 in 50ms
+ GET /signin 200 in 21ms

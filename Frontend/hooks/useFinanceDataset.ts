@@ -45,7 +45,10 @@ export function useFinanceDataset() {
             setLoading(false);
           }
         },
-        (e) => { setError(e.message); setLoading(false); }
+        (e) => {
+          setError(e.message);
+          setLoading(false);
+        }
       )
     );
 
