@@ -2,13 +2,15 @@
   "name": "money-tracking-app-root",
   "version": "1.0.0",
   "private": true,
+  "workspaces": [
+    "Frontend"
+  ],
   "scripts": {
-    "install": "cd Frontend && npm install",
-    "build": "cd Frontend && npm run build",
-    "start": "cd Frontend && npm start",
-    "lint": "cd Frontend && npm run lint",
-    "typecheck": "cd Frontend && npm run typecheck",
-    "dev": "cd Frontend && npm run dev",
-    "clean": "cd Frontend && npm run clean"
+    "build": "npm run build --workspace=money-tracking-app",
+    "start": "npm run start --workspace=money-tracking-app",
+    "lint": "npm run lint --workspace=money-tracking-app",
+    "typecheck": "npm run typecheck --workspace=money-tracking-app",
+    "dev": "npm run dev --workspace=money-tracking-app",
+    "clean": "npm run clean --workspace=money-tracking-app"
   }
 }
