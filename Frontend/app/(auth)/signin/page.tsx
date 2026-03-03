@@ -14,7 +14,7 @@ const FEATURES = [
 ];
 
 export default function SignInPage() {
-  const { user, loading } = useAuth();
+  const { user, loading, error } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -23,7 +23,7 @@ export default function SignInPage() {
     }
   }, [user, loading, router]);
 
-  if (loading || user) {
+  if (loading || (user && !error)) {
     return (
       <main className="flex min-h-screen items-center justify-center p-6">
         <svg className="h-8 w-8 animate-spin text-bankBlue" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -68,7 +68,14 @@ export default function SignInPage() {
           <div className="my-6 border-t border-slate-100 dark:border-slate-700" />
 
           {/* Sign-in */}
-          <GoogleSignInButton />
+          <div className="space-y-4">
+            {error && (
+              <div role="alert" className="rounded-xl bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 p-3 text-sm text-red-700 dark:text-red-400">
+                {error}
+              </div>
+            )}
+            <GoogleSignInButton />
+          </div>
 
           <p className="mt-4 text-center text-xs text-slate-400 dark:text-slate-500">
             Your data is stored securely in Firebase and never shared.

@@ -1,0 +1,14 @@
+{
+  "name": "money-tracking-app-root",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "install": "cd Frontend && npm install",
+    "build": "cd Frontend && npm run build",
+    "start": "cd Frontend && npm start",
+    "lint": "cd Frontend && npm run lint",
+    "typecheck": "cd Frontend && npm run typecheck",
+    "dev": "cd Frontend && npm run dev",
+    "clean": "cd Frontend && npm run clean"
+  }
+}
