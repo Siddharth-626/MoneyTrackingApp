@@ -1,16 +1,37 @@
 {
-  "name": "money-tracking-app-root",
+  "name": "moneytrackingapp",
   "version": "1.0.0",
   "private": true,
-  "workspaces": [
-    "Frontend"
-  ],
   "scripts": {
-    "build": "npm run build --workspace=money-tracking-app",
-    "start": "npm run start --workspace=money-tracking-app",
-    "lint": "npm run lint --workspace=money-tracking-app",
-    "typecheck": "npm run typecheck --workspace=money-tracking-app",
-    "dev": "npm run dev --workspace=money-tracking-app",
-    "clean": "npm run clean --workspace=money-tracking-app"
+    "clean": "node -e \"require('fs').rmSync('.next',{recursive:true,force:true});require('fs').rmSync('out',{recursive:true,force:true});\"",
+    "dev": "next dev",
+    "build": "next build",
+    "export": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "firebase": "^11.10.0",
+    "html-to-image": "^1.11.13",
+    "jspdf": "^4.1.0",
+    "jspdf-autotable": "^5.0.7",
+    "next": "15.1.0",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
+    "recharts": "^3.7.0",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/react": "^19.0.2",
+    "@types/react-dom": "^19.0.2",
+    "autoprefixer": "^10.4.20",
+    "eslint": "^9.16.0",
+    "eslint-config-next": "15.1.0",
+    "gh-pages": "^6.3.0",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.16",
+    "typescript": "^5.7.2"
   }
 }
