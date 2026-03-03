@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
-
+ 
 export const metadata: Metadata = {
   title: "Money Tracker — Personal Finance Dashboard",
   description: "Track lending principal, class income, monthly interest, and expenses in one place.",
