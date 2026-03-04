@@ -20,15 +20,24 @@ export function useExpenses() {
 
     setLoading(true);
     setError(null);
-    const unsub = subscribeToExpenses(user.uid, (items) => {
-      setRows(items);
-      setLoading(false);
-    }, (e) => {
-      setError(e.message);
-      setLoading(false);
-    });
 
-    return unsub;
+    try {
+      const unsub = subscribeToExpenses(
+        user.uid,
+        (items) => {
+          setRows(items);
+          setLoading(false);
+        },
+        (e) => {
+          setError(e.message);
+          setLoading(false);
+        }
+      );
+      return unsub;
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to subscribe to expenses");
+      setLoading(false);
+    }
   }, [user]);
 
   const total = useMemo(() => rows.reduce((sum, r) => sum + r.amount, 0), [rows]);

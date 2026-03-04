@@ -30,15 +30,26 @@ export function useClassEntriesMonth(year: number, monthIndex0: number) {
 
     setLoading(true);
     setError(null);
-    const unsub = subscribeToClassEntriesInRange(user.uid, range.startISO, range.endISO, (rows) => {
-      setEntries(rows);
-      setLoading(false);
-    }, (e) => {
-      setError(e.message);
-      setLoading(false);
-    });
 
-    return unsub;
+    try {
+      const unsub = subscribeToClassEntriesInRange(
+        user.uid,
+        range.startISO,
+        range.endISO,
+        (rows) => {
+          setEntries(rows);
+          setLoading(false);
+        },
+        (e) => {
+          setError(e.message);
+          setLoading(false);
+        }
+      );
+      return unsub;
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to subscribe to class entries");
+      setLoading(false);
+    }
   }, [user, range.startISO, range.endISO]);
 
   const byDate = useMemo(() => {
