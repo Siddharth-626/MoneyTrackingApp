@@ -24,19 +24,15 @@ jobs:
           node-version: 20
 
       - name: Install dependencies
-        run: |
-          cd Frontend
-          npm install
+        run: npm install
 
       - name: Build & Export Next.js
-        run: |
-          cd Frontend
-          npm run build
+        run: npm run build
 
       - name: Upload GitHub Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: Frontend/out
+          path: out
 
   deploy:
     needs: build
