@@ -20,15 +20,20 @@ export function useMonthlyLedger() {
 
     setLoading(true);
     setError(null);
-    const unsub = subscribeToMonths(user.uid, (items) => {
-      setRows(items);
-      setLoading(false);
-    }, (e) => {
-      setError(e.message);
-      setLoading(false);
-    });
 
-    return unsub;
+    try {
+      const unsub = subscribeToMonths(user.uid, (items) => {
+        setRows(items);
+        setLoading(false);
+      }, (e) => {
+        setError(e.message);
+        setLoading(false);
+      });
+      return unsub;
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to subscribe to months");
+      setLoading(false);
+    }
   }, [user]);
 
   return { rows, loading, error };

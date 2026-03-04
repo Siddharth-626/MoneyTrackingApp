@@ -26,19 +26,24 @@ export function useFinanceData() {
 
     setLoading(true);
     setError(null);
-    const unsub = subscribeToProfile(
-      user.uid,
-      (nextProfile) => {
-        setProfile(nextProfile);
-        setLoading(false);
-      },
-      (e) => {
-        setError(e.message);
-        setLoading(false);
-      }
-    );
 
-    return unsub;
+    try {
+      const unsub = subscribeToProfile(
+        user.uid,
+        (nextProfile) => {
+          setProfile(nextProfile);
+          setLoading(false);
+        },
+        (e) => {
+          setError(e.message);
+          setLoading(false);
+        }
+      );
+      return unsub;
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to subscribe to profile");
+      setLoading(false);
+    }
   }, [user]);
 
   const data = useMemo<FinanceData | null>(() => {

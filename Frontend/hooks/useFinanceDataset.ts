@@ -35,49 +35,60 @@ export function useFinanceDataset() {
     let profileReceived = false;
     const unsubs: Array<() => void> = [];
 
-    unsubs.push(
-      subscribeToProfile(
-        user.uid,
-        (p) => {
-          setProfile(p);
-          if (!profileReceived) {
-            profileReceived = true;
+    try {
+      unsubs.push(
+        subscribeToProfile(
+          user.uid,
+          (p) => {
+            setProfile(p);
+            if (!profileReceived) {
+              profileReceived = true;
+              setLoading(false);
+            }
+          },
+          (e) => {
+            setError(e.message);
             setLoading(false);
           }
-        },
-        (e) => { setError(e.message); setLoading(false); }
-      )
-    );
+        )
+      );
 
-    unsubs.push(
-      subscribeToClassEntries(
-        user.uid,
-        (rows) => {
-          setClassEntries(rows);
-        },
-        (e) => setError(e.message)
-      )
-    );
+      unsubs.push(
+        subscribeToClassEntries(
+          user.uid,
+          (rows) => {
+            setClassEntries(rows);
+          },
+          (e) => setError(e.message)
+        )
+      );
 
-    unsubs.push(
-      subscribeToExpenses(
-        user.uid,
-        (rows) => {
-          setExpenses(rows);
-        },
-        (e) => setError(e.message)
-      )
-    );
+      unsubs.push(
+        subscribeToExpenses(
+          user.uid,
+          (rows) => {
+            setExpenses(rows);
+          },
+          (e) => setError(e.message)
+        )
+      );
 
-    unsubs.push(
-      subscribeToCompoundingHistory(
-        user.uid,
-        (rows) => {
-          setCompoundingHistory(rows);
-        },
-        (e) => setError(e.message)
-      )
-    );
+      unsubs.push(
+        subscribeToCompoundingHistory(
+          user.uid,
+          (rows) => {
+            setCompoundingHistory(rows);
+          },
+          (e) => {
+            setError(e.message);
+            setLoading(false);
+          }
+        )
+      );
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to subscribe to data");
+      setLoading(false);
+    }
 
     return () => {
       for (const u of unsubs) u();
