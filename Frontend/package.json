@@ -3,10 +3,14 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "clean": "node -e \"require('fs').rmSync('.next',{recursive:true,force:true});require('fs').rmSync('out',{recursive:true,force:true});\"",
+    "clean": "node -e \"require('fs').rmSync('.next',{recursive:true,force:true});require('fs').rmSync('out',{recursive:true,force:true});require('fs').rmSync('.open-next',{recursive:true,force:true});\"",
     "dev": "next dev",
     "build": "next build",
-    "export": "next build",
+    "build:ghpages": "cross-env NEXT_PUBLIC_DEPLOY_TARGET=ghpages next build",
+    "build:cloudflare": "cross-env NEXT_PUBLIC_DEPLOY_TARGET=cloudflare opennextjs-cloudflare build",
+    "preview:cloudflare": "cross-env NEXT_PUBLIC_DEPLOY_TARGET=cloudflare opennextjs-cloudflare build && wrangler dev",
+    "deploy:cloudflare": "cross-env NEXT_PUBLIC_DEPLOY_TARGET=cloudflare opennextjs-cloudflare build && wrangler deploy",
+    "export": "cross-env NEXT_PUBLIC_DEPLOY_TARGET=ghpages next build",
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit"
@@ -16,22 +20,24 @@
     "html-to-image": "^1.11.13",
     "jspdf": "^4.1.0",
     "jspdf-autotable": "^5.0.7",
-    "next": "15.1.0",
+    "next": "16.1.6",
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "recharts": "^3.7.0",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
+    "@opennextjs/cloudflare": "^1.17.1",
     "@types/node": "^22.10.0",
     "@types/react": "^19.0.2",
     "@types/react-dom": "^19.0.2",
     "autoprefixer": "^10.4.20",
     "eslint": "^9.16.0",
-    "eslint-config-next": "15.1.0",
+    "eslint-config-next": "16.1.6",
     "gh-pages": "^6.3.0",
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.16",
-    "typescript": "^5.7.2"
+    "typescript": "^5.7.2",
+    "wrangler": "^4.69.0"
   }
 }

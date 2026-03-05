@@ -1,0 +1,20 @@
+name = "moneytrackingapp"
+main = ".open-next/worker/index.mjs"
+compatibility_date = "2025-02-15"
+compatibility_flags = ["nodejs_compat"]
+
+# Serve static assets produced by `opennextjs-cloudflare build`
+assets = { directory = ".open-next/assets" }
+
+# Expose deploy target to the client at build time
+[vars]
+NEXT_PUBLIC_DEPLOY_TARGET = "cloudflare"
+
+# KV for ISR/incremental cache. Replace IDs with your namespaces or add env-specific sections.
+kv_namespaces = [
+  { binding = "NEXT_CACHE_WORKERS_KV", id = "TODO_REPLACE_WITH_PROD_KV_ID", preview_id = "TODO_REPLACE_WITH_PREVIEW_KV_ID" }
+]
+
+# Optional: set account_id or routes/custom domain when you have them.
+# account_id = ""
+# routes = ["your-domain.com/*"]
