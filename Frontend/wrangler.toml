@@ -1,5 +1,5 @@
 name = "moneytrackingapp"
-main = ".open-next/worker/index.mjs"
+main = ".open-next/worker.js"
 compatibility_date = "2025-02-15"
 compatibility_flags = ["nodejs_compat"]
 
@@ -14,6 +14,9 @@ NEXT_PUBLIC_DEPLOY_TARGET = "cloudflare"
 kv_namespaces = [
   { binding = "NEXT_CACHE_WORKERS_KV", id = "TODO_REPLACE_WITH_PROD_KV_ID", preview_id = "TODO_REPLACE_WITH_PREVIEW_KV_ID" }
 ]
+
+[build]
+command = "npm run build:cloudflare"
 
 # Optional: set account_id or routes/custom domain when you have them.
 # account_id = ""
