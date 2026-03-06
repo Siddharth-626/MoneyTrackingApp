@@ -54,14 +54,16 @@ export default function DashboardPage() {
           </div>
         </header>
 
-        {error && (
+        {error ? (
           <div role="alert" className="mb-4 rounded-xl bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 p-3 text-sm text-red-700 dark:text-red-400">
             {error}
           </div>
-        )}
-
-        {loading || !data ? (
+        ) : loading ? (
           <DashboardSkeleton />
+        ) : !data ? (
+          <div className="rounded-2xl bg-white dark:bg-slate-800 p-8 text-center shadow-panel">
+            <p className="text-slate-600 dark:text-slate-400">No financial profile found. Please ensure your profile is initialized.</p>
+          </div>
         ) : (
           <div className="space-y-4">
             <SummaryCards dashboard={data.dashboard} />

@@ -14,7 +14,7 @@ const FEATURES = [
 ];
 
 export default function SignInPage() {
-  const { user, loading } = useAuth();
+  const { user, loading, error } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -66,6 +66,13 @@ export default function SignInPage() {
 
           {/* Divider */}
           <div className="my-6 border-t border-slate-100 dark:border-slate-700" />
+
+          {/* Auth initialization error */}
+          {error && (
+            <div role="alert" className="mb-6 rounded-xl bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 p-3 text-sm text-red-700 dark:text-red-400">
+              {error}
+            </div>
+          )}
 
           {/* Sign-in */}
           <GoogleSignInButton />
