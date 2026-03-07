@@ -25,11 +25,14 @@ export default function SignInPage() {
 
   if (loading || user) {
     return (
-      <main className="flex min-h-screen items-center justify-center p-6">
+      <main className="flex min-h-screen flex-col items-center justify-center gap-4 p-6">
         <svg className="h-8 w-8 animate-spin text-bankBlue" viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <circle className="opacity-20" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
           <path className="opacity-80" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
         </svg>
+        <p className="text-sm font-medium text-slate-600 dark:text-slate-400">
+          {user ? "Redirecting to dashboard…" : "Checking authentication…"}
+        </p>
       </main>
     );
   }
