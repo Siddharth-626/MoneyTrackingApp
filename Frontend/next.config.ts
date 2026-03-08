@@ -4,10 +4,10 @@ import type { NextConfig } from "next";
 //   ghpages   – static export for GitHub Pages
 //   cloudflare – edge build via OpenNext + Wrangler (no static output)
 //   (unset)    – standard Next.js server
-const deployTarget = (process.env.NEXT_PUBLIC_DEPLOY_TARGET as
+const deployTarget = process.env.NEXT_PUBLIC_DEPLOY_TARGET as
   | "ghpages"
   | "cloudflare"
-  | undefined) ?? "cloudflare";
+  | undefined;
 const isGhPages = deployTarget === "ghpages";
 const isCloudflare = deployTarget === "cloudflare";
 

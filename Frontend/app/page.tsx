@@ -10,9 +10,7 @@ export default function HomePage() {
 
   useEffect(() => {
     if (loading) return;
-    if (user !== undefined) {
-      router.replace(user ? "/dashboard" : "/signin");
-    }
+    router.replace(user ? "/dashboard" : "/signin");
   }, [loading, router, user]);
 
   return (
