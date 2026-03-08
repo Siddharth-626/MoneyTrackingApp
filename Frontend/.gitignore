@@ -3,6 +3,8 @@ node_modules
 .open-next
 
 .env.local
+next_dev.log
+tsconfig.tsbuildinfo
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
