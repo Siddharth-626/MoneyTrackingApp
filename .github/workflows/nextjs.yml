@@ -31,7 +31,7 @@ jobs:
       - name: Build & Export Next.js
         run: |
           cd Frontend
-          npm run build
+          npm run build:ghpages
 
       - name: Upload GitHub Pages artifact
         uses: actions/upload-pages-artifact@v3

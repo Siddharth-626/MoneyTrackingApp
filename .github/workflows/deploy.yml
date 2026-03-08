@@ -21,7 +21,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
 
       - name: Install dependencies
         run: |
@@ -31,7 +31,7 @@ jobs:
       - name: Build Next.js app
         run: |
           cd Frontend
-          npm run build
+          npm run build:ghpages
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
