@@ -14,16 +14,16 @@ const FEATURES = [
 ];
 
 export default function SignInPage() {
-  const { user, loading } = useAuth();
+  const { user, loading, error } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (!loading && user) {
+    if (!loading && !error && user) {
       router.replace("/dashboard");
     }
-  }, [user, loading, router]);
+  }, [user, loading, error, router]);
 
-  if (loading || user) {
+  if (loading || (user && !error)) {
     return (
       <main className="flex min-h-screen items-center justify-center p-6">
         <svg className="h-8 w-8 animate-spin text-bankBlue" viewBox="0 0 24 24" fill="none" aria-hidden="true">

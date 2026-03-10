@@ -30,15 +30,33 @@ export function useClassEntriesMonth(year: number, monthIndex0: number) {
 
     setLoading(true);
     setError(null);
+
+    // Safety timeout: if Firestore does not respond within 10s, unblock the UI.
+    const timeoutId = setTimeout(() => {
+      setLoading((prev) => {
+        if (prev) {
+          setError("Data is taking too long to load. Please check your connection.");
+          return false;
+        }
+        return prev;
+      });
+    }, 10_000);
+
     const unsub = subscribeToClassEntriesInRange(user.uid, range.startISO, range.endISO, (rows) => {
+      clearTimeout(timeoutId);
       setEntries(rows);
+      setError(null);
       setLoading(false);
     }, (e) => {
+      clearTimeout(timeoutId);
       setError(e.message);
       setLoading(false);
     });
 
-    return unsub;
+    return () => {
+      clearTimeout(timeoutId);
+      unsub();
+    };
   }, [user, range.startISO, range.endISO]);
 
   const byDate = useMemo(() => {

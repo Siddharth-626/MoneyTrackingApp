@@ -32,6 +32,17 @@ export function useFinanceDataset() {
     setLoading(true);
     setError(null);
 
+    // Safety timeout: if Firestore does not respond within 10s, unblock the UI.
+    const timeoutId = setTimeout(() => {
+      setLoading((prev) => {
+        if (prev) {
+          setError("Data is taking too long to load. Please check your connection.");
+          return false;
+        }
+        return prev;
+      });
+    }, 10_000);
+
     let profileReceived = false;
     const unsubs: Array<() => void> = [];
 
@@ -41,11 +52,17 @@ export function useFinanceDataset() {
         (p) => {
           setProfile(p);
           if (!profileReceived) {
+            clearTimeout(timeoutId);
             profileReceived = true;
+            setError(null);
             setLoading(false);
           }
         },
-        (e) => { setError(e.message); setLoading(false); }
+        (e) => {
+          clearTimeout(timeoutId);
+          setError(e.message);
+          setLoading(false);
+        }
       )
     );
 
@@ -80,6 +97,7 @@ export function useFinanceDataset() {
     );
 
     return () => {
+      clearTimeout(timeoutId);
       for (const u of unsubs) u();
     };
   }, [user]);
