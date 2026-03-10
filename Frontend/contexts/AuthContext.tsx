@@ -34,7 +34,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }, AUTH_TIMEOUT_MS);
 
     const unsubscribe = onAuthStateChanged(auth, async (nextUser) => {
-      clearTimeout(timeoutId);
       try {
         setError(null);
         setUser(nextUser);
@@ -45,6 +44,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         console.error("Auth initialization error:", err);
         setError(err instanceof Error ? err.message : "An unknown error occurred during authentication.");
       } finally {
+        clearTimeout(timeoutId);
         setLoading(false);
       }
     });

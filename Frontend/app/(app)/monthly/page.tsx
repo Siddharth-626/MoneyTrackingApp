@@ -28,7 +28,15 @@ export default function MonthlyPage() {
             </button>
           </div>
         </header>
-        {loading ? <p className="text-slate-600 dark:text-slate-400">Loading months...</p> : <MonthlyTable rows={rows} />}
+        {loading ? (
+          <p className="text-slate-600 dark:text-slate-400">Loading months...</p>
+        ) : rows.length === 0 ? (
+          <div role="alert" className="rounded-xl bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800 p-3 text-sm text-amber-700 dark:text-amber-400">
+            No monthly ledger data available.
+          </div>
+        ) : (
+          <MonthlyTable rows={rows} />
+        )}
       </main>
     </AuthGate>
   );

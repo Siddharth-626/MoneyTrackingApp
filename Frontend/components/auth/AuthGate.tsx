@@ -21,8 +21,8 @@ export function AuthGate({ children }: { children: ReactNode }) {
   }, [loading]);
 
   useEffect(() => {
-    if (loading) return;
-    if (!user && !error) router.replace("/signin");
+    if (loading || error) return;
+    if (!user) router.replace("/signin");
   }, [loading, router, user, error]);
 
   if (error) {
