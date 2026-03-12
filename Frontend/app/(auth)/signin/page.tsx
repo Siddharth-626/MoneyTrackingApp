@@ -14,16 +14,16 @@ const FEATURES = [
 ];
 
 export default function SignInPage() {
-  const { user, loading } = useAuth();
+  const { user, loading, error } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (!loading && user) {
+    if (!loading && !error && user) {
       router.replace("/dashboard");
     }
-  }, [user, loading, router]);
+  }, [user, loading, error, router]);
 
-  if (loading || user) {
+  if (loading || (user && !error)) {
     return (
       <main className="flex min-h-screen items-center justify-center p-6">
         <svg className="h-8 w-8 animate-spin text-bankBlue" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -39,6 +39,11 @@ export default function SignInPage() {
       <div className="w-full max-w-md">
         {/* Card */}
         <section className="rounded-2xl bg-white dark:bg-slate-800 p-8 shadow-panel">
+          {error && (
+            <div role="alert" className="mb-6 rounded-xl bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 p-3 text-sm text-red-700 dark:text-red-400">
+              {error}
+            </div>
+          )}
           {/* Logo / brand mark */}
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-bankBlue text-white text-xl font-bold select-none">
