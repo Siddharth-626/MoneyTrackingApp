@@ -211,9 +211,23 @@ export default function AnalyticsPage() {
           </div>
         </header>
 
-        {error ? <p className="mb-4 rounded-xl bg-red-50 dark:bg-red-900/30 p-3 text-sm text-red-700 dark:text-red-400">{error}</p> : null}
-        {loading || !profile || !totals ? (
-          <p className="text-slate-600 dark:text-slate-400">Loading analytics...</p>
+        {error ? (
+          <div role="alert" className="mb-4 rounded-xl bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 p-3 text-sm text-red-700 dark:text-red-400">
+            {error}
+          </div>
+        ) : loading ? (
+          <div className="space-y-4 animate-pulse">
+            <div className="h-40 rounded-2xl bg-slate-200 dark:bg-slate-700" />
+            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <div key={i} className="h-24 rounded-2xl bg-slate-200 dark:bg-slate-700" />
+              ))}
+            </div>
+          </div>
+        ) : !profile || !totals ? (
+          <div className="rounded-xl bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800 p-3 text-sm text-amber-700 dark:text-amber-400">
+            No analytics data available for the selected filters.
+          </div>
         ) : (
           <div className="space-y-4">
             <section className="rounded-2xl bg-white dark:bg-slate-800 p-5 shadow-panel">
