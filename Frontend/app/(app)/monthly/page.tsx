@@ -8,7 +8,7 @@ import { useMonthlyLedger } from "@/hooks/useMonthlyLedger";
 import { signOutUser } from "@/lib/firebase/auth";
 
 export default function MonthlyPage() {
-  const { rows, loading } = useMonthlyLedger();
+  const { rows, loading, error } = useMonthlyLedger();
 
   return (
     <AuthGate>
@@ -28,7 +28,28 @@ export default function MonthlyPage() {
             </button>
           </div>
         </header>
-        {loading ? <p className="text-slate-600 dark:text-slate-400">Loading months...</p> : <MonthlyTable rows={rows} />}
+        {error ? (
+          <div role="alert" className="rounded-xl bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 p-3 text-sm text-red-700 dark:text-red-400">
+            {error}
+          </div>
+        ) : loading ? (
+          <div className="flex animate-pulse space-x-4">
+            <div className="flex-1 space-y-4 py-1">
+              <div className="h-4 rounded bg-slate-200 dark:bg-slate-700"></div>
+              <div className="grid grid-cols-3 gap-4">
+                <div className="col-span-2 h-4 rounded bg-slate-200 dark:bg-slate-700"></div>
+                <div className="col-span-1 h-4 rounded bg-slate-200 dark:bg-slate-700"></div>
+              </div>
+              <div className="h-4 rounded bg-slate-200 dark:bg-slate-700"></div>
+            </div>
+          </div>
+        ) : rows.length === 0 ? (
+          <div className="rounded-xl bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800 p-3 text-sm text-amber-700 dark:text-amber-400">
+            No monthly records found.
+          </div>
+        ) : (
+          <MonthlyTable rows={rows} />
+        )}
       </main>
     </AuthGate>
   );

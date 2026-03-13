@@ -30,15 +30,27 @@ export function useClassEntriesMonth(year: number, monthIndex0: number) {
 
     setLoading(true);
     setError(null);
+
+    const timeoutId = setTimeout(() => {
+      setLoading(false);
+      setError("Taking too long to load class entries. Please check your connection.");
+    }, 10000);
+
     const unsub = subscribeToClassEntriesInRange(user.uid, range.startISO, range.endISO, (rows) => {
+      clearTimeout(timeoutId);
       setEntries(rows);
+      setError(null);
       setLoading(false);
     }, (e) => {
+      clearTimeout(timeoutId);
       setError(e.message);
       setLoading(false);
     });
 
-    return unsub;
+    return () => {
+      clearTimeout(timeoutId);
+      unsub();
+    };
   }, [user, range.startISO, range.endISO]);
 
   const byDate = useMemo(() => {

@@ -26,19 +26,31 @@ export function useFinanceData() {
 
     setLoading(true);
     setError(null);
+
+    const timeoutId = setTimeout(() => {
+      setLoading(false);
+      setError("Taking too long to load profile. Please check your connection.");
+    }, 10000);
+
     const unsub = subscribeToProfile(
       user.uid,
       (nextProfile) => {
+        clearTimeout(timeoutId);
         setProfile(nextProfile);
+        setError(null);
         setLoading(false);
       },
       (e) => {
+        clearTimeout(timeoutId);
         setError(e.message);
         setLoading(false);
       }
     );
 
-    return unsub;
+    return () => {
+      clearTimeout(timeoutId);
+      unsub();
+    };
   }, [user]);
 
   const data = useMemo<FinanceData | null>(() => {

@@ -20,15 +20,27 @@ export function useExpenses() {
 
     setLoading(true);
     setError(null);
+
+    const timeoutId = setTimeout(() => {
+      setLoading(false);
+      setError("Taking too long to load expenses. Please check your connection.");
+    }, 10000);
+
     const unsub = subscribeToExpenses(user.uid, (items) => {
+      clearTimeout(timeoutId);
       setRows(items);
+      setError(null);
       setLoading(false);
     }, (e) => {
+      clearTimeout(timeoutId);
       setError(e.message);
       setLoading(false);
     });
 
-    return unsub;
+    return () => {
+      clearTimeout(timeoutId);
+      unsub();
+    };
   }, [user]);
 
   const total = useMemo(() => rows.reduce((sum, r) => sum + r.amount, 0), [rows]);

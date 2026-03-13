@@ -35,7 +35,9 @@ export function AuthGate({ children }: { children: ReactNode }) {
             </svg>
           </div>
           <h2 className="text-xl font-bold text-red-600 dark:text-red-400">Authentication Error</h2>
-          <p className="mt-3 text-sm text-slate-600 dark:text-slate-400 leading-relaxed">{error}</p>
+          <div role="alert" className="mt-4 rounded-xl bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 p-3 text-sm text-red-700 dark:text-red-400">
+            {error}
+          </div>
           <button
             type="button"
             onClick={() => signOutUser()}
