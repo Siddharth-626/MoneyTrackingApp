@@ -14,7 +14,7 @@ const FEATURES = [
 ];
 
 export default function SignInPage() {
-  const { user, loading } = useAuth();
+  const { user, loading, error } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -69,6 +69,12 @@ export default function SignInPage() {
 
           {/* Sign-in */}
           <GoogleSignInButton />
+
+          {error && (
+            <div role="alert" className="mt-4 rounded-xl bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 p-3 text-sm text-red-700 dark:text-red-400">
+              {error}
+            </div>
+          )}
 
           <p className="mt-4 text-center text-xs text-slate-400 dark:text-slate-500">
             Your data is stored securely in Firebase and never shared.

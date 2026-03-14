@@ -58,9 +58,9 @@ export function AuthGate({ children }: { children: ReactNode }) {
         </svg>
         <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Authenticating…</p>
         {isSlow && (
-          <p className="text-xs text-slate-500 dark:text-slate-500 max-w-xs text-center">
+          <div className="mt-2 rounded-xl bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800 p-3 text-sm text-amber-700 dark:text-amber-400 max-w-xs text-center">
             This is taking longer than usual. Please check your internet connection.
-          </p>
+          </div>
         )}
       </div>
     );
