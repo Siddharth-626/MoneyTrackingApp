@@ -20,15 +20,32 @@ export function useMonthlyLedger() {
 
     setLoading(true);
     setError(null);
+
+    const timeoutId = setTimeout(() => {
+      setLoading((prev) => {
+        if (prev) {
+          setError("Fetching monthly ledger is taking too long. Please check your connection.");
+          return false;
+        }
+        return prev;
+      });
+    }, 10_000);
+
     const unsub = subscribeToMonths(user.uid, (items) => {
+      clearTimeout(timeoutId);
       setRows(items);
       setLoading(false);
+      setError(null);
     }, (e) => {
+      clearTimeout(timeoutId);
       setError(e.message);
       setLoading(false);
     });
 
-    return unsub;
+    return () => {
+      clearTimeout(timeoutId);
+      unsub();
+    };
   }, [user]);
 
   return { rows, loading, error };
