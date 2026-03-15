@@ -32,6 +32,16 @@ export function useFinanceDataset() {
     setLoading(true);
     setError(null);
 
+    const timeoutId = setTimeout(() => {
+      setLoading((prev) => {
+        if (prev) {
+          setError("Fetching financial data is taking longer than expected. Please check your connection.");
+          return false;
+        }
+        return prev;
+      });
+    }, 10000);
+
     let profileReceived = false;
     const unsubs: Array<() => void> = [];
 
@@ -41,11 +51,17 @@ export function useFinanceDataset() {
         (p) => {
           setProfile(p);
           if (!profileReceived) {
+            clearTimeout(timeoutId);
             profileReceived = true;
+            setError(null);
             setLoading(false);
           }
         },
-        (e) => { setError(e.message); setLoading(false); }
+        (e) => {
+          clearTimeout(timeoutId);
+          setError(e.message);
+          setLoading(false);
+        }
       )
     );
 
@@ -80,6 +96,7 @@ export function useFinanceDataset() {
     );
 
     return () => {
+      clearTimeout(timeoutId);
       for (const u of unsubs) u();
     };
   }, [user]);
