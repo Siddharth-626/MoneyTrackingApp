@@ -60,9 +60,9 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {loading || !data ? (
+        {loading || (!data && !error) ? (
           <DashboardSkeleton />
-        ) : (
+        ) : data ? (
           <div className="space-y-4">
             <SummaryCards dashboard={data.dashboard} />
             <div className="grid gap-4 lg:grid-cols-2">
@@ -72,7 +72,7 @@ export default function DashboardPage() {
               <ExpenseLoggerCard />
             </div>
           </div>
-        )}
+        ) : null}
       </main>
     </AuthGate>
   );

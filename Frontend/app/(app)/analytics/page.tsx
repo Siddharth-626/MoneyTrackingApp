@@ -211,9 +211,23 @@ export default function AnalyticsPage() {
           </div>
         </header>
 
-        {error ? <p className="mb-4 rounded-xl bg-red-50 dark:bg-red-900/30 p-3 text-sm text-red-700 dark:text-red-400">{error}</p> : null}
+        {error ? (
+          <div role="alert" className="mb-4 rounded-xl bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 p-3 text-sm text-red-700 dark:text-red-400">
+            {error}
+          </div>
+        ) : null}
         {loading || !profile || !totals ? (
-          <p className="text-slate-600 dark:text-slate-400">Loading analytics...</p>
+          <>
+            {!error && (
+              <div className="flex flex-col items-center justify-center py-12 gap-4">
+                <svg className="h-8 w-8 animate-spin text-bankBlue dark:text-slate-400" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <circle className="opacity-20" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-80" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                </svg>
+                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Loading analytics...</p>
+              </div>
+            )}
+          </>
         ) : (
           <div className="space-y-4">
             <section className="rounded-2xl bg-white dark:bg-slate-800 p-5 shadow-panel">

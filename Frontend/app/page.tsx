@@ -5,13 +5,13 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 
 export default function HomePage() {
-  const { user, loading } = useAuth();
+  const { user, loading, error } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (loading) return;
+    if (loading || error) return;
     router.replace(user ? "/dashboard" : "/signin");
-  }, [loading, router, user]);
+  }, [loading, user, error, router]);
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center gap-4 p-6">

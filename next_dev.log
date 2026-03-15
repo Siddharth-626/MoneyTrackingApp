@@ -1,0 +1,14 @@
+
+> money-tracking-app@1.0.0 dev
+> next dev
+
+▲ Next.js 16.1.6 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.0.2:3000
+
+✓ Starting...
+✓ Ready in 1086ms
+○ Compiling / ...
+ GET / 200 in 5.2s (compile: 4.6s, render: 656ms)
+ GET /signin 200 in 1029ms (compile: 954ms, render: 76ms)
+ GET /signin 200 in 147ms (compile: 9ms, render: 138ms)
