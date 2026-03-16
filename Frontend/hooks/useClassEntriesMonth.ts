@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { subscribeToClassEntriesInRange } from "@/lib/firestore/repository";
 import type { ClassEntry } from "@/types/finance";
+import { DATA_TIMEOUT_MS } from "@/lib/constants";
 
 function monthBoundsISO(year: number, monthIndex0: number) {
   const start = new Date(Date.UTC(year, monthIndex0, 1));
@@ -30,15 +31,32 @@ export function useClassEntriesMonth(year: number, monthIndex0: number) {
 
     setLoading(true);
     setError(null);
+
+    const timeoutId = setTimeout(() => {
+      setLoading((prev) => {
+        if (prev) {
+          setError("Failed to load class entries. Please check your connection.");
+          return false;
+        }
+        return prev;
+      });
+    }, DATA_TIMEOUT_MS);
+
     const unsub = subscribeToClassEntriesInRange(user.uid, range.startISO, range.endISO, (rows) => {
+      clearTimeout(timeoutId);
       setEntries(rows);
+      setError(null);
       setLoading(false);
     }, (e) => {
+      clearTimeout(timeoutId);
       setError(e.message);
       setLoading(false);
     });
 
-    return unsub;
+    return () => {
+      clearTimeout(timeoutId);
+      unsub();
+    };
   }, [user, range.startISO, range.endISO]);
 
   const byDate = useMemo(() => {
