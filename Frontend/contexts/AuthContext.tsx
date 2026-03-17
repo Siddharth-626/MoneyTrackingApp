@@ -5,8 +5,7 @@ import { createContext, useEffect, useMemo, useState } from "react";
 import { User, onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/lib/firebase/client";
 import { ensureUserProfile } from "@/lib/finance/service";
-
-const AUTH_TIMEOUT_MS = 15_000;
+import { AUTH_TIMEOUT_MS } from "@/lib/constants";
 
 type AuthContextValue = {
   user: User | null;
@@ -34,7 +33,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }, AUTH_TIMEOUT_MS);
 
     const unsubscribe = onAuthStateChanged(auth, async (nextUser) => {
-      clearTimeout(timeoutId);
       try {
         setError(null);
         setUser(nextUser);
@@ -45,6 +43,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         console.error("Auth initialization error:", err);
         setError(err instanceof Error ? err.message : "An unknown error occurred during authentication.");
       } finally {
+        clearTimeout(timeoutId);
         setLoading(false);
       }
     });

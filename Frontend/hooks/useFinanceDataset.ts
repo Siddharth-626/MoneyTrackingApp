@@ -9,6 +9,7 @@ import {
   subscribeToProfile
 } from "@/lib/firestore/repository";
 import type { ClassEntry, CompoundingRecord, ExpenseRecord, FinancialProfile } from "@/types/finance";
+import { DATA_TIMEOUT_MS } from "@/lib/constants";
 
 export function useFinanceDataset() {
   const { user } = useAuth();
@@ -35,17 +36,33 @@ export function useFinanceDataset() {
     let profileReceived = false;
     const unsubs: Array<() => void> = [];
 
+    const timeoutId = setTimeout(() => {
+      setLoading((prev) => {
+        if (prev) {
+          setError("Data is taking too long to load. Please check your connection or refresh.");
+          return false;
+        }
+        return prev;
+      });
+    }, DATA_TIMEOUT_MS);
+
     unsubs.push(
       subscribeToProfile(
         user.uid,
         (p) => {
+          clearTimeout(timeoutId);
+          setError(null);
           setProfile(p);
           if (!profileReceived) {
             profileReceived = true;
             setLoading(false);
           }
         },
-        (e) => { setError(e.message); setLoading(false); }
+        (e) => {
+          clearTimeout(timeoutId);
+          setError(e.message);
+          setLoading(false);
+        }
       )
     );
 
@@ -80,6 +97,7 @@ export function useFinanceDataset() {
     );
 
     return () => {
+      clearTimeout(timeoutId);
       for (const u of unsubs) u();
     };
   }, [user]);
