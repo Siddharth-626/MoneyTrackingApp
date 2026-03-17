@@ -5,6 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { buildDashboardMetrics } from "@/lib/finance/calculations";
 import { subscribeToProfile } from "@/lib/firestore/repository";
 import { DashboardMetrics, FinancialProfile } from "@/types/finance";
+import { DATA_TIMEOUT_MS } from "@/lib/constants";
 
 type FinanceData = {
   profile: FinancialProfile;
@@ -26,19 +27,36 @@ export function useFinanceData() {
 
     setLoading(true);
     setError(null);
+
+    const timeoutId = setTimeout(() => {
+      setLoading((prev) => {
+        if (prev) {
+          setError("Data is taking too long to load. Please check your connection or refresh.");
+          return false;
+        }
+        return prev;
+      });
+    }, DATA_TIMEOUT_MS);
+
     const unsub = subscribeToProfile(
       user.uid,
       (nextProfile) => {
+        clearTimeout(timeoutId);
+        setError(null);
         setProfile(nextProfile);
         setLoading(false);
       },
       (e) => {
+        clearTimeout(timeoutId);
         setError(e.message);
         setLoading(false);
       }
     );
 
-    return unsub;
+    return () => {
+      clearTimeout(timeoutId);
+      unsub();
+    };
   }, [user]);
 
   const data = useMemo<FinanceData | null>(() => {
