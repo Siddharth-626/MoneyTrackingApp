@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { buildDashboardMetrics } from "@/lib/finance/calculations";
 import { subscribeToProfile } from "@/lib/firestore/repository";
+import { DATA_TIMEOUT_MS } from "@/lib/constants";
 import { DashboardMetrics, FinancialProfile } from "@/types/finance";
 
 type FinanceData = {
@@ -26,19 +27,36 @@ export function useFinanceData() {
 
     setLoading(true);
     setError(null);
+
+    const timeoutId = setTimeout(() => {
+      setLoading((prev) => {
+        if (prev) {
+          setError("Data loading is taking longer than expected. Please check your connection.");
+          return false;
+        }
+        return prev;
+      });
+    }, DATA_TIMEOUT_MS);
+
     const unsub = subscribeToProfile(
       user.uid,
       (nextProfile) => {
+        clearTimeout(timeoutId);
+        setError(null);
         setProfile(nextProfile);
         setLoading(false);
       },
       (e) => {
+        clearTimeout(timeoutId);
         setError(e.message);
         setLoading(false);
       }
     );
 
-    return unsub;
+    return () => {
+      clearTimeout(timeoutId);
+      unsub();
+    };
   }, [user]);
 
   const data = useMemo<FinanceData | null>(() => {
