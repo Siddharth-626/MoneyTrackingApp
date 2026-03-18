@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 
 export default function HomePage() {
-  const { user, loading } = useAuth();
+  const { user, loading, error } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
