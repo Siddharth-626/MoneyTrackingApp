@@ -1,26 +1,27 @@
+import path from "path";
 import type { NextConfig } from "next";
 
 // NEXT_PUBLIC_DEPLOY_TARGET options:
-//   ghpages   – static export for GitHub Pages
-//   cloudflare – edge build via OpenNext + Wrangler (no static output)
-//   (unset)    – standard Next.js server
+//   ghpages – static export for GitHub Pages
+//   (unset) – standard Next.js server
 const deployTarget = (process.env.NEXT_PUBLIC_DEPLOY_TARGET as
   | "ghpages"
-  | "cloudflare"
-  | undefined) ?? "cloudflare";
+  | undefined) ?? undefined;
 const isGhPages = deployTarget === "ghpages";
-const isCloudflare = deployTarget === "cloudflare";
 
 const nextConfig: NextConfig = {
-  // Static export only for GitHub Pages; Cloudflare uses the OpenNext edge worker.
+  // Static export only for GitHub Pages.
   ...(isGhPages && { output: "export" }),
   basePath: isGhPages ? "/MoneyTrackingApp" : "",
   assetPrefix: isGhPages ? "/MoneyTrackingApp" : "",
   images: {
-    // Cloudflare image resizing is handled by OpenNext; unoptimized only for static exports.
-    unoptimized: isGhPages || isCloudflare,
+    // Unoptimized images only for static exports.
+    unoptimized: isGhPages,
   },
   reactStrictMode: true,
+  turbopack: {
+    root: path.resolve(__dirname),
+  },
 };
 
 export default nextConfig;
