@@ -1,4 +1,4 @@
-import type { ClassEntry, ExpenseRecord, FinancialProfile } from "@/types/finance";
+import type { ClassEntry, ExpenseRecord, FinancialProfile, IncomeRecord } from "@/types/finance";
 
 export type DateRangeFilter = {
   startISO?: string;
@@ -29,23 +29,30 @@ export function withinRange(dateISO: string, startISO?: string, endISO?: string)
   return true;
 }
 
-export function applyAnalyticsFilters(entries: ClassEntry[], expenses: ExpenseRecord[], filters: AnalyticsFilters) {
+export function applyAnalyticsFilters(entries: ClassEntry[], expenses: ExpenseRecord[], incomeRecords: IncomeRecord[], filters: AnalyticsFilters) {
   let filteredEntries = entries;
   let filteredExpenses = expenses;
+  let filteredIncome = incomeRecords;
 
-  if (filters.year && filters.month) {
-    const mk = `${filters.year}-${String(filters.month).padStart(2, "0")}`;
-    filteredEntries = filteredEntries.filter((e) => e.monthKey === mk);
-    filteredExpenses = filteredExpenses.filter((e) => e.monthKey === mk);
-  } else if (filters.year) {
-    const y = String(filters.year);
-    filteredEntries = filteredEntries.filter((e) => e.dateISO.startsWith(y));
-    filteredExpenses = filteredExpenses.filter((e) => e.dateISO.startsWith(y));
+  // year=0 or undefined means All Time — skip year/month filter
+  if (filters.year && filters.year > 0) {
+    if (filters.month && filters.month > 0) {
+      const mk = `${filters.year}-${String(filters.month).padStart(2, "0")}`;
+      filteredEntries = filteredEntries.filter((e) => e.monthKey === mk);
+      filteredExpenses = filteredExpenses.filter((e) => e.monthKey === mk);
+      filteredIncome = filteredIncome.filter((r) => r.dateISO.startsWith(mk));
+    } else {
+      const y = String(filters.year);
+      filteredEntries = filteredEntries.filter((e) => e.dateISO.startsWith(y));
+      filteredExpenses = filteredExpenses.filter((e) => e.dateISO.startsWith(y));
+      filteredIncome = filteredIncome.filter((r) => r.dateISO.startsWith(y));
+    }
   }
 
   if (filters.range?.startISO || filters.range?.endISO) {
     filteredEntries = filteredEntries.filter((e) => withinRange(e.dateISO, filters.range?.startISO, filters.range?.endISO));
     filteredExpenses = filteredExpenses.filter((e) => withinRange(e.dateISO, filters.range?.startISO, filters.range?.endISO));
+    filteredIncome = filteredIncome.filter((r) => withinRange(r.dateISO, filters.range?.startISO, filters.range?.endISO));
   }
 
   if (filters.onlyIncomeDays) {
@@ -58,7 +65,18 @@ export function applyAnalyticsFilters(entries: ClassEntry[], expenses: ExpenseRe
     filteredEntries = filteredEntries.filter((e) => expenseDates.has(e.dateISO));
   }
 
-  return { entries: filteredEntries, expenses: filteredExpenses };
+  return { entries: filteredEntries, expenses: filteredExpenses, incomeRecords: filteredIncome };
+}
+
+export function groupDirectIncomeByMonth(incomeRecords: IncomeRecord[]) {
+  const map = new Map<string, number>();
+  for (const r of incomeRecords) {
+    const mk = r.dateISO.slice(0, 7);
+    map.set(mk, (map.get(mk) ?? 0) + r.amount);
+  }
+  return [...map.entries()]
+    .map(([monthKey, amount]) => ({ monthKey, amount }))
+    .sort((a, b) => a.monthKey.localeCompare(b.monthKey));
 }
 
 export function groupIncomeByDay(entries: ClassEntry[]) {

@@ -6,9 +6,10 @@ import {
   subscribeToClassEntries,
   subscribeToCompoundingHistory,
   subscribeToExpenses,
+  subscribeToIncomeHistory,
   subscribeToProfile
 } from "@/lib/firestore/repository";
-import type { ClassEntry, CompoundingRecord, ExpenseRecord, FinancialProfile } from "@/types/finance";
+import type { ClassEntry, CompoundingRecord, ExpenseRecord, FinancialProfile, IncomeRecord } from "@/types/finance";
 
 export function useFinanceDataset() {
   const { user } = useAuth();
@@ -16,6 +17,7 @@ export function useFinanceDataset() {
   const [classEntries, setClassEntries] = useState<ClassEntry[]>([]);
   const [expenses, setExpenses] = useState<ExpenseRecord[]>([]);
   const [compoundingHistory, setCompoundingHistory] = useState<CompoundingRecord[]>([]);
+  const [incomeHistory, setIncomeHistory] = useState<IncomeRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -25,6 +27,7 @@ export function useFinanceDataset() {
       setClassEntries([]);
       setExpenses([]);
       setCompoundingHistory([]);
+      setIncomeHistory([]);
       setLoading(false);
       return;
     }
@@ -79,6 +82,16 @@ export function useFinanceDataset() {
       )
     );
 
+    unsubs.push(
+      subscribeToIncomeHistory(
+        user.uid,
+        (rows) => {
+          setIncomeHistory(rows);
+        },
+        (e) => setError(e.message)
+      )
+    );
+
     return () => {
       for (const u of unsubs) u();
     };
@@ -86,5 +99,5 @@ export function useFinanceDataset() {
 
   const ready = useMemo(() => Boolean(profile) && !loading && !error, [profile, loading, error]);
 
-  return { profile, classEntries, expenses, compoundingHistory, loading, error, ready };
+  return { profile, classEntries, expenses, compoundingHistory, incomeHistory, loading, error, ready };
 }

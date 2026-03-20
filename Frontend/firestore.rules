@@ -117,6 +117,17 @@ service cloud.firestore {
       request.resource.data.createdAt is string;
     }
 
+    function validIncomeCreate() {
+      return request.resource.data.keys().hasOnly([
+        'dateISO', 'amount', 'note', 'createdAt'
+      ]) &&
+      isDateISO(request.resource.data.dateISO) &&
+      isNumber(request.resource.data.amount) &&
+      request.resource.data.amount > 0 &&
+      (!request.resource.data.keys().hasAny(['note']) || request.resource.data.note is string) &&
+      request.resource.data.createdAt is string;
+    }
+
     match /users/{uid} {
       allow read: if isOwner(uid);
       allow create, update, delete: if false;
@@ -156,6 +167,12 @@ service cloud.firestore {
       match /compoundingHistory/{recordId} {
         allow read: if isOwner(uid);
         allow create: if isOwner(uid) && validCompoundingCreate();
+        allow update, delete: if false;
+      }
+
+      match /incomeHistory/{recordId} {
+        allow read: if isOwner(uid);
+        allow create: if isOwner(uid) && validIncomeCreate();
         allow update, delete: if false;
       }
     }

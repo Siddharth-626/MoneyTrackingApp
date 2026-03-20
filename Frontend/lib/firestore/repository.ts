@@ -21,6 +21,7 @@ import {
   ExpenseInput,
   ExpenseRecord,
   FinancialProfile,
+  IncomeRecord,
   InterestRecord,
   MonthKey,
   MonthlyLedgerRow
@@ -61,6 +62,10 @@ function classEntryRef(uid: string, dateISO: string) {
 
 function compoundingCollection(uid: string) {
   return collection(db, "users", uid, "compoundingHistory");
+}
+
+function incomeHistoryCollection(uid: string) {
+  return collection(db, "users", uid, "incomeHistory");
 }
 
 function interestRef(uid: string, monthKey: MonthKey) {
@@ -660,6 +665,52 @@ export async function updateClassEntryNote(uid: string, dateISO: string, note: s
   });
 }
 
+export async function addIncomeToPrincipal(uid: string, amount: number, note?: string) {
+  if (amount <= 0) throw new Error("Income amount must be positive");
+
+  const todayISO = new Date().toISOString().slice(0, 10);
+  const monthKey = todayISO.slice(0, 7) as MonthKey;
+
+  await runTransaction(db, async (txn) => {
+    const pRef = profileRef(uid);
+    const mRef = monthRef(uid, monthKey);
+    const incomeRef = doc(collection(db, "users", uid, "incomeHistory"));
+
+    const pSnap = await txn.get(pRef);
+    const mSnap = await txn.get(mRef);
+    if (!pSnap.exists()) throw new Error("Profile not found");
+
+    const profile = toProfile(pSnap.data() as Record<string, unknown>);
+    const monthData = (mSnap.data() as Record<string, unknown> | undefined) ?? {};
+
+    const newPrincipal = profile.principal + amount;
+    const netProfit = Number(profile.netProfit ?? 0);
+
+    txn.set(
+      pRef,
+      { ...profile, principal: newPrincipal, updatedAt: nowISO() },
+      { merge: true }
+    );
+
+    txn.set(
+      mRef,
+      {
+        monthKey,
+        classesTaken: Number(monthData.classesTaken ?? 0),
+        classIncome: Number(monthData.classIncome ?? 0),
+        interestApplied: Boolean(monthData.interestApplied ?? false),
+        interestAmount: Number(monthData.interestAmount ?? 0),
+        expenseTotal: Number(monthData.expenseTotal ?? 0),
+        closingPrincipal: newPrincipal + netProfit,
+        updatedAt: nowISO()
+      },
+      { merge: true }
+    );
+
+    txn.set(incomeRef, stripUndefined({ dateISO: todayISO, amount, note, createdAt: nowISO() }));
+  });
+}
+
 export async function addNetProfitToPrincipal(uid: string) {
   const todayISO = new Date().toISOString().slice(0, 10);
   const monthKey = todayISO.slice(0, 7) as MonthKey;
@@ -729,6 +780,27 @@ export function subscribeToCompoundingHistory(uid: string, onData: (rows: Compou
           amountAdded: Number(data.amountAdded ?? 0),
           createdAt: String(data.createdAt ?? nowISO())
         } satisfies CompoundingRecord;
+      });
+      onData(rows);
+    },
+    onError
+  );
+}
+
+export function subscribeToIncomeHistory(uid: string, onData: (rows: IncomeRecord[]) => void, onError: (e: Error) => void = () => {}) {
+  const q = query(incomeHistoryCollection(uid), orderBy("createdAt", "desc"), limit(500));
+  return onSnapshot(
+    q,
+    (snap) => {
+      const rows = snap.docs.map((d) => {
+        const data = d.data() as Record<string, unknown>;
+        return {
+          id: d.id,
+          dateISO: String(data.dateISO ?? ""),
+          amount: Number(data.amount ?? 0),
+          note: data.note == null ? undefined : String(data.note),
+          createdAt: String(data.createdAt ?? nowISO())
+        } satisfies IncomeRecord;
       });
       onData(rows);
     },

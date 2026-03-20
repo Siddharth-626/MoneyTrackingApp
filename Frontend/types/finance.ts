@@ -37,6 +37,14 @@ export type CompoundingRecord = {
   createdAt: string;
 };
 
+export type IncomeRecord = {
+  id: string;
+  dateISO: string;
+  amount: number;
+  note?: string;
+  createdAt: string;
+};
+
 export type MonthlyLedgerRow = {
   monthKey: MonthKey;
   classesTaken: number;

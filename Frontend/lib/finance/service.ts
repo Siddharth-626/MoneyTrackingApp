@@ -1,10 +1,12 @@
 export {
   addExpense,
+  addIncomeToPrincipal,
   addNetProfitToPrincipal,
   applyMonthlyInterest,
   clearAllClassData,
   ensureUserProfile,
   setMonthlyClasses,
+  subscribeToIncomeHistory,
   toggleClassEntry,
   updateClassEntryNote,
   updateFinancialProfile,

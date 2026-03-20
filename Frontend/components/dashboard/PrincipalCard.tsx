@@ -2,7 +2,7 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { addNetProfitToPrincipal, updateFinancialProfileV2 } from "@/lib/finance/service";
+import { addNetProfitToPrincipal, addIncomeToPrincipal, updateFinancialProfileV2 } from "@/lib/finance/service";
 import { formatCurrency } from "@/lib/finance/calculations";
 import { FinancialProfile } from "@/types/finance";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
@@ -16,6 +16,11 @@ export function PrincipalCard({ profile }: { profile: FinancialProfile }) {
   const [compounding, setCompounding] = useState(false);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+
+  const [incomeAmount, setIncomeAmount] = useState("");
+  const [incomeNote, setIncomeNote] = useState("");
+  const [incomeConfirmOpen, setIncomeConfirmOpen] = useState(false);
+  const [addingIncome, setAddingIncome] = useState(false);
 
   // Sync local state when profile updates from Firestore subscription
   useEffect(() => {
@@ -50,6 +55,29 @@ export function PrincipalCard({ profile }: { profile: FinancialProfile }) {
       setMessage({ type: "error", text: error instanceof Error ? error.message : "Failed to save settings." });
     } finally {
       setSaving(false);
+    }
+  };
+
+  const onConfirmAddIncome = async () => {
+    if (!user) return;
+    const amount = Number(incomeAmount);
+    if (Number.isNaN(amount) || amount <= 0) {
+      setMessage({ type: "error", text: "Please enter a valid income amount." });
+      setIncomeConfirmOpen(false);
+      return;
+    }
+    setAddingIncome(true);
+    setMessage(null);
+    try {
+      await addIncomeToPrincipal(user.uid, amount, incomeNote.trim() || undefined);
+      setMessage({ type: "success", text: `${formatCurrency(amount)} added to principal.` });
+      setIncomeAmount("");
+      setIncomeNote("");
+      setIncomeConfirmOpen(false);
+    } catch (error: unknown) {
+      setMessage({ type: "error", text: error instanceof Error ? error.message : "Failed to add income." });
+    } finally {
+      setAddingIncome(false);
     }
   };
 
@@ -122,6 +150,53 @@ export function PrincipalCard({ profile }: { profile: FinancialProfile }) {
         onClose={() => setConfirmOpen(false)}
         onConfirm={onConfirmCompound}
         loading={compounding}
+      />
+
+      {/* Add Income Section */}
+      <div className="mt-5 rounded-2xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 p-4">
+        <h3 className="text-sm font-semibold text-slateInk dark:text-slate-100 mb-3">Add Income to Principal</h3>
+        <div className="space-y-2">
+          <label className="block text-sm text-slate-700 dark:text-slate-300">
+            Income Amount (₹)
+            <input
+              type="number"
+              step="any"
+              min="0"
+              value={incomeAmount}
+              onChange={(e) => setIncomeAmount(e.target.value)}
+              placeholder="e.g. 5000"
+              className="mt-1 w-full rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 dark:text-slate-100 p-2 text-sm"
+            />
+          </label>
+          <label className="block text-sm text-slate-700 dark:text-slate-300">
+            Note (optional)
+            <input
+              type="text"
+              value={incomeNote}
+              onChange={(e) => setIncomeNote(e.target.value)}
+              placeholder="e.g. Salary, freelance payment..."
+              className="mt-1 w-full rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 dark:text-slate-100 p-2 text-sm"
+            />
+          </label>
+          <button
+            type="button"
+            disabled={!incomeAmount || Number(incomeAmount) <= 0 || addingIncome}
+            onClick={() => setIncomeConfirmOpen(true)}
+            className="mt-1 w-full rounded-xl bg-bankBlue px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
+          >
+            {addingIncome ? "Adding..." : "Add Income to Principal"}
+          </button>
+        </div>
+      </div>
+
+      <ConfirmModal
+        open={incomeConfirmOpen}
+        title="Add Income to Principal"
+        description={`This will add ${incomeAmount ? formatCurrency(Number(incomeAmount)) : "the entered amount"} directly to your principal balance.${incomeNote.trim() ? ` Note: "${incomeNote.trim()}"` : ""}`}
+        confirmText="Add Income"
+        onClose={() => setIncomeConfirmOpen(false)}
+        onConfirm={onConfirmAddIncome}
+        loading={addingIncome}
       />
     </section>
   );
